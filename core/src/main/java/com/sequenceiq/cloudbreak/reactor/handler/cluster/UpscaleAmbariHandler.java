@@ -33,7 +33,7 @@ public class UpscaleAmbariHandler implements ReactorEventHandler<UpscaleAmbariRe
         UpscaleAmbariResult result;
         try {
             clusterUpscaleService.upscaleAmbari(request.getStackId(), request.getHostGroupName(),
-                    request.getScalingAdjustment());
+                    request.getScalingAdjustment(), request.isPrimaryGatewayChanged());
             result = new UpscaleAmbariResult(request);
         } catch (Exception e) {
             result = new UpscaleAmbariResult(e.getMessage(), e, request);

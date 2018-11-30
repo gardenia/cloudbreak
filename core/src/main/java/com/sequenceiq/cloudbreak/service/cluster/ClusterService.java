@@ -317,7 +317,7 @@ public class ClusterService {
         }
     }
 
-    private boolean isMultipleGateway(Stack stack) {
+    public boolean isMultipleGateway(Stack stack) {
         int gatewayCount = 0;
         for (InstanceGroup ig : stack.getInstanceGroups()) {
             if (ig.getInstanceGroupType() == InstanceGroupType.GATEWAY) {
@@ -325,6 +325,19 @@ public class ClusterService {
             }
         }
         return gatewayCount > 1;
+    }
+
+    public void removeTerminatedPrimaryGateway(Long clusterId, String hostName, boolean singlePrimaryGateway) {
+        if (!singlePrimaryGateway) {
+            return;
+        }
+
+        Set<HostMetadata> primaryGateways = hostMetadataRepository.findHostsInClusterByName(clusterId, hostName);
+
+        List<HostMetadata> oldPrimaryGateways = primaryGateways.stream()
+                .filter(hmd -> hmd.getHostMetadataState() != HostMetadataState.SERVICES_RUNNING)
+                .collect(Collectors.toList());
+        hostMetadataRepository.deleteAll(oldPrimaryGateways);
     }
 
     public Iterable<Cluster> saveAll(Iterable<Cluster> clusters) {
@@ -657,9 +670,9 @@ public class ClusterService {
     }
 
     private void validateRepair(Stack stack, HostMetadata hostMetadata, boolean repairWithReattach) {
-        if (!repairWithReattach && (isGateway(hostMetadata) && !isMultipleGateway(stack))) {
-            throw new BadRequestException("Ambari server failure cannot be repaired with single gateway!");
-        }
+//        if (!repairWithReattach && (isGateway(hostMetadata) && !isMultipleGateway(stack))) {
+//            throw new BadRequestException("Ambari server failure cannot be repaired with single gateway!");
+//        }
         if (isGateway(hostMetadata) && withEmbeddedAmbariDB(stack.getCluster())) {
             throw new BadRequestException("Ambari server failure with embedded database cannot be repaired!");
         }

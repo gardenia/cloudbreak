@@ -9,24 +9,24 @@ public class StackAndClusterUpscaleTriggerEvent extends StackScaleTriggerEvent {
 
     private final ScalingType scalingType;
 
-    private final Set<String> hostNames;
+    private final boolean singleMasterGateway;
 
     public StackAndClusterUpscaleTriggerEvent(String selector, Long stackId, String instanceGroup, Integer adjustment, ScalingType scalingType) {
-        this(selector, stackId, instanceGroup, adjustment, scalingType, Collections.emptySet());
+        this(selector, stackId, instanceGroup, adjustment, scalingType, Collections.emptySet(), false);
     }
 
     public StackAndClusterUpscaleTriggerEvent(String selector, Long stackId,
-            String instanceGroup, Integer adjustment, ScalingType scalingType, Set<String> hostNames) {
-        super(selector, stackId, instanceGroup, adjustment);
-        this.hostNames = hostNames;
+            String instanceGroup, Integer adjustment, ScalingType scalingType, Set<String> hostNames, boolean singlePrimaryGateway) {
+        super(selector, stackId, instanceGroup, adjustment, hostNames);
         this.scalingType = scalingType;
+        this.singleMasterGateway = singlePrimaryGateway;
     }
 
     public ScalingType getScalingType() {
         return scalingType;
     }
 
-    public Set<String> getHostNames() {
-        return hostNames;
+    public boolean isSingleMasterGateway() {
+        return singleMasterGateway;
     }
 }

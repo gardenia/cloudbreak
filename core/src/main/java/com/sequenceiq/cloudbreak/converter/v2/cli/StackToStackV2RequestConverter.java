@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -32,6 +33,7 @@ import com.sequenceiq.cloudbreak.domain.Recipe;
 import com.sequenceiq.cloudbreak.domain.stack.Stack;
 import com.sequenceiq.cloudbreak.domain.stack.cluster.host.HostGroup;
 import com.sequenceiq.cloudbreak.domain.stack.instance.InstanceGroup;
+import com.sequenceiq.cloudbreak.domain.view.CompactView;
 import com.sequenceiq.cloudbreak.service.ComponentConfigProvider;
 import com.sequenceiq.cloudbreak.service.stack.StackService;
 
@@ -49,7 +51,8 @@ public class StackToStackV2RequestConverter extends AbstractConversionServiceAwa
     @Override
     public StackV2Request convert(Stack source) {
         StackV2Request stackV2Request = new StackV2Request();
-        stackV2Request.setGeneral(getGeneralSettings("", source.getCredential().getName()));
+        String envName = Optional.ofNullable(source.getEnvironment()).map(CompactView::getName).orElse(null);
+        stackV2Request.setGeneral(getGeneralSettings("", source.getCredential().getName(), envName));
         stackV2Request.setPlacement(getPlacementSettings(source.getRegion(), source.getAvailabilityZone()));
         stackV2Request.setCustomDomain(getCustomDomainSettings(source.getCustomDomain(), source.getCustomHostname(),
                 source.isHostgroupNameAsHostname(), source.isClusterNameAsSubdomain()));
@@ -96,10 +99,13 @@ public class StackToStackV2RequestConverter extends AbstractConversionServiceAwa
         return cd;
     }
 
-    private GeneralSettings getGeneralSettings(String name, String credentialName) {
+    private GeneralSettings getGeneralSettings(String name, String credentialName, String environmentName) {
         GeneralSettings gs = new GeneralSettings();
         gs.setName(name);
         gs.setCredentialName(credentialName);
+        if (environmentName != null) {
+            gs.setEnvironmentName(environmentName);
+        }
         return gs;
     }
 

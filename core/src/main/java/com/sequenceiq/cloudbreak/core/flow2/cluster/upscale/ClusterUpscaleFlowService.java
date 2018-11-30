@@ -31,8 +31,10 @@ import com.sequenceiq.cloudbreak.service.hostgroup.HostGroupService;
 import com.sequenceiq.cloudbreak.service.stack.StackService;
 
 @Component
-public class ClusterUpscaleFlowService {
+class ClusterUpscaleFlowService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClusterUpscaleFlowService.class);
+
+    private static final String STATUS_REASON_REPAIR_SINGLE_MASTER = "Repairing single master of cluster.";
 
     @Inject
     private StackService stackService;
@@ -52,12 +54,22 @@ public class ClusterUpscaleFlowService {
     @Inject
     private HostMetadataRepository hostMetadataRepository;
 
-    public void upscalingAmbari(long stackId) {
+    void ambariRepairSingleMasterStarted(long stackId) {
+        clusterService.updateClusterStatusByStackId(stackId, UPDATE_IN_PROGRESS, "Repairing single master of cluster finished.");
+        flowMessageService.fireEventAndLog(stackId, Msg.CLUSTER_SINGLE_MASTER_REPAIR_STARTED, UPDATE_IN_PROGRESS.name());
+    }
+
+    void ambariRepairSingleMasterFinished(long stackId) {
+        clusterService.updateClusterStatusByStackId(stackId, UPDATE_IN_PROGRESS, "Repairing single master of cluster finished.");
+        flowMessageService.fireEventAndLog(stackId, Msg.CLUSTER_SINGLE_MASTER_REPAIR_FINISHED, UPDATE_IN_PROGRESS.name());
+    }
+
+    void upscalingAmbari(long stackId) {
         clusterService.updateClusterStatusByStackId(stackId, UPDATE_IN_PROGRESS, "Upscaling the cluster.");
         flowMessageService.fireEventAndLog(stackId, Msg.AMBARI_CLUSTER_SCALING_UP, UPDATE_IN_PROGRESS.name());
     }
 
-    public void clusterUpscaleFinished(StackView stackView, String hostgroupName) {
+    void clusterUpscaleFinished(StackView stackView, String hostgroupName) {
         int numOfFailedHosts = updateMetadata(stackView, hostgroupName);
         boolean success = numOfFailedHosts == 0;
         if (success) {
@@ -72,7 +84,7 @@ public class ClusterUpscaleFlowService {
         }
     }
 
-    public void clusterUpscaleFailed(long stackId, Exception errorDetails) {
+    void clusterUpscaleFailed(long stackId, Exception errorDetails) {
         LOGGER.info("Error during Cluster upscale flow: " + errorDetails.getMessage(), errorDetails);
         clusterService.updateClusterStatusByStackId(stackId, UPDATE_FAILED, errorDetails.getMessage());
         stackUpdater.updateStackStatus(stackId, DetailedStackStatus.PROVISIONED,

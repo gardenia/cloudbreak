@@ -739,6 +739,7 @@ public class StackService {
     public List<InstanceMetaData> getInstanceMetaDataForPrivateIds(List<InstanceMetaData> instanceMetaDataList, Collection<Long> privateIds) {
         return instanceMetaDataList.stream()
                 .filter(instanceMetaData -> privateIds.contains(instanceMetaData.getPrivateId()))
+                .filter(instanceMetaData -> !instanceMetaData.isTerminated())
                 .collect(Collectors.toList());
     }
 
