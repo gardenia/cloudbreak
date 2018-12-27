@@ -13,7 +13,7 @@
 
 [realms]
  {{ salt['pillar.get']('kerberos:realm')|upper }} = {
-  {% for kdchost in pillar.get('kerberos:url').split(',') %}
+  {% for kdchost in salt['pillar.get']('kerberos:url').split(',') %}
    kdc = {{ kdchost }}
   {% endfor %}
   admin_server = {{ salt['pillar.get']('kerberos:adminUrl') }}
