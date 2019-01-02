@@ -23,7 +23,7 @@ import com.sequenceiq.it.cloudbreak.newway.Recipe;
 import com.sequenceiq.it.cloudbreak.newway.RecipeEntity;
 import com.sequenceiq.it.cloudbreak.newway.action.ClusterTemplateCreateAction;
 import com.sequenceiq.it.cloudbreak.newway.action.ClusterTemplateDeleteAction;
-import com.sequenceiq.it.cloudbreak.newway.action.ClusterTemplateListAction;
+import com.sequenceiq.it.cloudbreak.newway.action.ClusterTemplateGetAction;
 import com.sequenceiq.it.cloudbreak.newway.action.DeleteClusterFromTemplateAction;
 import com.sequenceiq.it.cloudbreak.newway.action.LaunchClusterFromTemplateAction;
 import com.sequenceiq.it.cloudbreak.newway.action.LdapConfigCreateIfNotExistsAction;
@@ -68,7 +68,7 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = "testContext")
-    public void testClusterTemplateCreateAndListAndDelete(TestContext testContext) {
+    public void testClusterTemplateCreateAndGetAndDelete(TestContext testContext) {
         testContext
                 .given("environment", EnvironmentEntity.class).withRegions(VALID_REGION).withLocation(VALID_LOCATION)
                 .when(Environment::post)
@@ -76,9 +76,9 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .given("stackTemplate", StackTemplateEntity.class).withGeneralSettings("generalSettings")
                 .given(ClusterTemplateEntity.class).withStackTemplate("stackTemplate")
                 .when(new ClusterTemplateCreateAction())
-                .when(new ClusterTemplateListAction())
-                .then(new CheckClusterTemplateFirstResponse())
                 .then(new CheckStackTemplateAfterClusterTemplateCreation())
+                .when(new ClusterTemplateGetAction())
+                .then(new CheckClusterTemplateFirstResponse())
                 .capture(ClusterTemplateEntity::count, key("ctSize"))
                 .when(new ClusterTemplateDeleteAction())
                 .capture(ct -> ct.count() - 1, key("ctSize"))
@@ -95,7 +95,7 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .capture(ClusterTemplateEntity::count, key("ctSize"))
                 .when(new ClusterTemplateCreateAction())
                 .verify(ct -> ct.count() - 1, key("ctSize"))
-                .when(new ClusterTemplateListAction())
+                .when(new ClusterTemplateGetAction())
                 .then(new CheckClusterTemplateType(SPARK))
                 .validate();
     }
@@ -143,7 +143,7 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .capture(ClusterTemplateEntity::count, key("ctSize"))
                 .when(new ClusterTemplateCreateAction())
                 .verify(ct -> ct.count() - 1, key("ctSize"))
-                .when(new ClusterTemplateListAction())
+                .when(new ClusterTemplateGetAction())
                 .then(new CheckStackTemplateAfterClusterTemplateCreationWithProperties())
                 .when(new LaunchClusterFromTemplateAction("stackTemplate"))
                 .await(STACK_AVAILABLE, key("stackTemplate"))

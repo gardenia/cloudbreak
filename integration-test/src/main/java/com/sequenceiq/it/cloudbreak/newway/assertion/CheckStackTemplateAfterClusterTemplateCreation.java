@@ -1,7 +1,5 @@
 package com.sequenceiq.it.cloudbreak.newway.assertion;
 
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,12 +16,7 @@ public class CheckStackTemplateAfterClusterTemplateCreation implements Assertion
 
     @Override
     public ClusterTemplateEntity doAssertion(TestContext testContext, ClusterTemplateEntity entity, CloudbreakClient client) throws Exception {
-        Optional<ClusterTemplateResponse> first = entity.getResponses().stream().filter(f -> f.getName().equals(entity.getName())).findFirst();
-        if (!first.isPresent()) {
-            throw new IllegalArgumentException("No element in the result");
-        }
-
-        ClusterTemplateResponse clusterTemplateResponse = first.get();
+        ClusterTemplateResponse clusterTemplateResponse = entity.getResponse();
 
         StackV2Request stackTemplate = clusterTemplateResponse.getStackTemplate();
         if (stackTemplate == null) {

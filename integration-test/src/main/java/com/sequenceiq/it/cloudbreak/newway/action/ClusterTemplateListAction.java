@@ -7,19 +7,19 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sequenceiq.cloudbreak.api.model.template.ClusterTemplateResponse;
+import com.sequenceiq.cloudbreak.api.model.template.ClusterTemplateViewResponse;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.ClusterTemplateEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.ClusterTemplateViewEntity;
 
-public class ClusterTemplateListAction implements ActionV2<ClusterTemplateEntity> {
+public class ClusterTemplateListAction implements ActionV2<ClusterTemplateViewEntity> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClusterTemplateListAction.class);
 
     @Override
-    public ClusterTemplateEntity action(TestContext testContext, ClusterTemplateEntity entity, CloudbreakClient client) throws Exception {
-        logJSON(LOGGER, " ClusterTemplateEntity get request:\n", entity.getRequest());
-        Set<ClusterTemplateResponse> responses = client.getCloudbreakClient()
+    public ClusterTemplateViewEntity action(TestContext testContext, ClusterTemplateViewEntity entity, CloudbreakClient client) throws Exception {
+        logJSON(LOGGER, " ClusterTemplateViewEntity get request:\n", entity.getRequest());
+        Set<ClusterTemplateViewResponse> responses = client.getCloudbreakClient()
                 .clusterTemplateV3EndPoint()
                 .listByWorkspace(client.getWorkspaceId());
         entity.setResponses(responses);

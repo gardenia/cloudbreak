@@ -41,10 +41,6 @@ public class ClusterTemplate extends ClusterTemplateEntity {
         return get(CLUSTER_TEMPLATE);
     }
 
-    public static Action<ClusterTemplate> getAll() {
-        return new Action<>(getNew(), ClusterTemplateAction::getAll);
-    }
-
     public static Action<ClusterTemplate> delete(String key) {
         return new Action<>(getTestContext(key), ClusterTemplateAction::delete);
     }

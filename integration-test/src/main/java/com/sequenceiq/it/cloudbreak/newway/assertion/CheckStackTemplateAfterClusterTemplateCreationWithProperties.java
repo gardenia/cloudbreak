@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Lists;
 import com.sequenceiq.cloudbreak.api.model.SecurityRuleRequest;
 import com.sequenceiq.cloudbreak.api.model.mpack.ManagementPackDetails;
 import com.sequenceiq.cloudbreak.api.model.template.ClusterTemplateResponse;
@@ -29,7 +30,8 @@ public class CheckStackTemplateAfterClusterTemplateCreationWithProperties implem
     @Override
     public ClusterTemplateEntity doAssertion(TestContext testContext, ClusterTemplateEntity entity, CloudbreakClient client) throws Exception {
         ClusterTemplateEntity clusterTemplate = testContext.get(ClusterTemplateEntity.class);
-        Optional<ClusterTemplateResponse> first = entity.getResponses().stream().filter(ct -> ct.getName().equals(clusterTemplate.getName())).findFirst();
+        Optional<ClusterTemplateResponse> first = Lists.newArrayList(entity.getResponse())
+                .stream().filter(ct -> ct.getName().equals(clusterTemplate.getName())).findFirst();
         if (!first.isPresent()) {
             throw new IllegalArgumentException("No element in the result");
         }

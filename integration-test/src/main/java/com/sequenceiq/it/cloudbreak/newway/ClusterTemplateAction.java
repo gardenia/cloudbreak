@@ -1,9 +1,10 @@
 package com.sequenceiq.it.cloudbreak.newway;
 
-import com.sequenceiq.it.IntegrationTestContext;
-import com.sequenceiq.it.cloudbreak.newway.log.Log;
-
 import java.io.IOException;
+
+import com.sequenceiq.it.IntegrationTestContext;
+import com.sequenceiq.it.cloudbreak.newway.entity.ClusterTemplateViewEntity;
+import com.sequenceiq.it.cloudbreak.newway.log.Log;
 
 class ClusterTemplateAction {
 
@@ -40,13 +41,13 @@ class ClusterTemplateAction {
     }
 
     public static void getAll(IntegrationTestContext integrationTestContext, Entity entity) {
-        ClusterTemplateEntity clusterTemplateEntity = (ClusterTemplateEntity) entity;
+        ClusterTemplateViewEntity clusterTemplateViewEntity = (ClusterTemplateViewEntity) entity;
         CloudbreakClient client;
         client = integrationTestContext.getContextParam(CloudbreakClient.CLOUDBREAK_CLIENT,
                 CloudbreakClient.class);
         Long workspaceId = integrationTestContext.getContextParam(CloudbreakTest.WORKSPACE_ID, Long.class);
         Log.log(" get all cluster templates. ");
-        clusterTemplateEntity.setResponses(
+        clusterTemplateViewEntity.setResponses(
                 client.getCloudbreakClient()
                         .clusterTemplateV3EndPoint()
                         .listByWorkspace(workspaceId));

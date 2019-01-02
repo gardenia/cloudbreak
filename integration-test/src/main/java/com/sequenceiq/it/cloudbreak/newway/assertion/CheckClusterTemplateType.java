@@ -2,6 +2,7 @@ package com.sequenceiq.it.cloudbreak.newway.assertion;
 
 import java.util.Optional;
 
+import com.google.common.collect.Lists;
 import com.sequenceiq.cloudbreak.api.model.template.ClusterTemplateResponse;
 import com.sequenceiq.cloudbreak.api.model.template.ClusterTemplateType;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
@@ -19,7 +20,8 @@ public class CheckClusterTemplateType implements AssertionV2<ClusterTemplateEnti
     @Override
     public ClusterTemplateEntity doAssertion(TestContext testContext, ClusterTemplateEntity entity, CloudbreakClient cloudbreakClient) throws Exception {
         ClusterTemplateEntity clusterTemplate = testContext.get(ClusterTemplateEntity.class);
-        Optional<ClusterTemplateResponse> first = entity.getResponses().stream().filter(ct -> ct.getName().equals(clusterTemplate.getName())).findFirst();
+        Optional<ClusterTemplateResponse> first = Lists.newArrayList(entity.getResponse())
+                .stream().filter(ct -> ct.getName().equals(clusterTemplate.getName())).findFirst();
         if (!first.isPresent()) {
             throw new IllegalArgumentException("No element in the result");
         }

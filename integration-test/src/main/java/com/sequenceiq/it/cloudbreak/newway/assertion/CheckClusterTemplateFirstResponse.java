@@ -3,8 +3,6 @@ package com.sequenceiq.it.cloudbreak.newway.assertion;
 import static com.sequenceiq.cloudbreak.api.model.template.ClusterTemplateType.OTHER;
 import static com.sequenceiq.cloudbreak.api.model.template.DatalakeRequired.OPTIONAL;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,12 +18,7 @@ public class CheckClusterTemplateFirstResponse implements AssertionV2<ClusterTem
 
     @Override
     public ClusterTemplateEntity doAssertion(TestContext testContext, ClusterTemplateEntity entity, CloudbreakClient client) throws Exception {
-        Optional<ClusterTemplateResponse> first = entity.getResponses().stream().filter(f -> f.getName().equals(entity.getName())).findFirst();
-        if (!first.isPresent()) {
-            throw new IllegalArgumentException("No element in the result");
-        }
-
-        ClusterTemplateResponse clusterTemplateResponse = first.get();
+        ClusterTemplateResponse clusterTemplateResponse = entity.getResponse();
 
         if (clusterTemplateResponse.getStackTemplate() == null) {
             throw new IllegalArgumentException("STack template is empty");
